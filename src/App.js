@@ -20,6 +20,7 @@ function App() {
        <Switch>
         <Route exact path='/' component={Semester} />
         <Route path='/schedule' component={SchedList} />
+
        </Switch>
       </BrowserRouter>
     </div>
