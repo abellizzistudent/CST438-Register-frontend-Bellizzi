@@ -13,7 +13,7 @@ import Cookies from 'js-cookie';
 import {SERVER_URL} from '../constants.js'
 
 
-// properties addCoure is required, function called when Add clicked.
+// properties addStudent is required, function called when Add clicked.
 class AddStudent extends Component {
       constructor(props) {
       super(props);
@@ -31,10 +31,10 @@ class AddStudent extends Component {
     handleChange = (event) => {
       this.setState({student:{student_name: event.target.value}});
     }
-
+	
   // Save course and close modal form
     handleAdd = () => {
-       this.props.addStudent(this.state.student);
+       this.props.addStudent(this.state.student_name);
        this.handleClose();
     }
 	
@@ -51,7 +51,7 @@ class AddStudent extends Component {
                 <DialogContent  style={{paddingTop: 20}} >
                   <TextField autoFocus fullWidth label="Student Name" name="student_name" onChange={this.handleChange}  />
 				  <br></br><br></br>
-					<TextField autoFocus fullWidth label="Student Email" name="student_email" onChange={this.handleChange}  />				  
+					<TextField autoFocus fullWidth label="Student Email" name="student_email" />				  
                 </DialogContent>
                 <DialogActions>
                   <Button color="secondary" onClick={this.handleClose}>Cancel</Button>
