@@ -32,7 +32,7 @@ class Semester extends Component {
   addStudent = (student) => {
     const token = Cookies.get('XSRF-TOKEN');
  
-    fetch(`${SERVER_URL}/student`,
+    fetch(`${SERVER_URL}/student/new/?name=${JSON.stringify(student.name)}&email=${JSON.stringify(student.email)}`,
       { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ class Semester extends Component {
           });
           
         } else {
-          toast.error("Error when adding", {
+          toast.error("Error when adding new student", {
               position: toast.POSITION.BOTTOM_LEFT
           });
           console.error('Post http status =' + res.status);

@@ -17,7 +17,7 @@ import {SERVER_URL} from '../constants.js'
 class AddStudent extends Component {
       constructor(props) {
       super(props);
-      this.state = {open: false, student:{ } };
+      this.state = {open: false, student:{}};
     };
     
     handleClickOpen = () => {
@@ -28,14 +28,19 @@ class AddStudent extends Component {
       this.setState( {open:false} );
     };
 
-    handleChange = (event) => {
-      this.setState({student:{student_name: event.target.value}});
+    handleChangeNameField = (event) => {
+      this.setState(aState => ({student:{name: event.target.value, email: aState.student.email}}));
+    }
+	
+	handleChangeEmailField = (event) => {
+      this.setState(aState => ({student:{name: aState.student.name, email: event.target.value}}));
     }
 	
   // Save course and close modal form
     handleAdd = () => {
-       this.props.addStudent(this.state.student_name);
+       this.props.addStudent(this.state.student);
        this.handleClose();
+	   //console.log("entered handle Add");
     }
 	
 
@@ -49,9 +54,9 @@ class AddStudent extends Component {
             <Dialog open={this.state.open} onClose={this.handleClose}>
                 <DialogTitle>Add Student</DialogTitle>
                 <DialogContent  style={{paddingTop: 20}} >
-                  <TextField autoFocus fullWidth label="Student Name" name="student_name" onChange={this.handleChange}  />
+                  <TextField autoFocus fullWidth label="Student Name" name="name" onChange={this.handleChangeNameField}  />
 				  <br></br><br></br>
-					<TextField autoFocus fullWidth label="Student Email" name="student_email" />				  
+					<TextField autoFocus fullWidth label="Student Email" name="email" onChange={this.handleChangeEmailField}  />				  
                 </DialogContent>
                 <DialogActions>
                   <Button color="secondary" onClick={this.handleClose}>Cancel</Button>
@@ -67,7 +72,7 @@ class AddStudent extends Component {
 
 // required property:  addStudent is a function to call to perform the Add action
 AddStudent.propTypes = {
-  addStudent : PropTypes.func.isRequired
+ addStudent : PropTypes.func
 }
 
 export default AddStudent;
