@@ -1,19 +1,12 @@
 import React, { Component } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import Cookies from 'js-cookie';
-import {SERVER_URL} from '../constants.js'
-import Grid from '@mui/material/Grid';
-import {DataGrid} from '@mui/x-data-grid';
-import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
+import { Link } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import AddStudent from './AddStudent';
+import Button from '@mui/material/Button';
 import Radio from '@mui/material/Radio';
+import {DataGrid} from '@mui/x-data-grid';
 import {SEMESTER_LIST} from '../constants.js'
-import { Link } from 'react-router-dom';
 
 
 // user selects from a list of  (year, semester) values
@@ -28,37 +21,6 @@ class Semester extends Component {
     this.setState({selected: event.target.value});
   }
   
-  // Add student
-  addStudent = (student) => {
-    const token = Cookies.get('XSRF-TOKEN');
- 
-    fetch(`${SERVER_URL}/student/new/?name=${JSON.stringify(student.name)}&email=${JSON.stringify(student.email)}`,
-      { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json',
-                   'X-XSRF-TOKEN': token  }, 
-        body: JSON.stringify(student)
-      })
-    .then(res => {
-        if (res.ok) {
-          toast.success("Student successfully added", {
-              position: toast.POSITION.BOTTOM_LEFT
-          });
-          
-        } else {
-          toast.error("Error when adding new student", {
-              position: toast.POSITION.BOTTOM_LEFT
-          });
-          console.error('Post http status =' + res.status);
-        }})
-    .catch(err => {
-      toast.error("Error when adding", {
-            position: toast.POSITION.BOTTOM_LEFT
-        });
-        console.error(err);
-    })
-  } 
-  //How to display this component
   render() {    
       const icolumns = [
       {
@@ -100,13 +62,7 @@ class Semester extends Component {
                       semester:SEMESTER_LIST[this.state.selected].name}} 
                 variant="outlined" color="primary" style={{margin: 10}}>
                 Get Schedule
-				</Button>
-				
-				<Button component={Link} 
-                      to={{pathname:'/addstudent'}} 
-                variant="outlined" color="primary" style={{margin: 10}}>
-                Add Student
-				</Button>
+              </Button>
           </div>
       </div>
     )

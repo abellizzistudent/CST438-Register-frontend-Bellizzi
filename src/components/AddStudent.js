@@ -1,78 +1,88 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import Cookies from 'js-cookie';
-import {SERVER_URL} from '../constants.js'
+import {SERVER_URL} from '../constants.js';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import TextField from '@mui/material/TextField';
+import DialogActions from '@mui/material/DialogActions';
 
 
-// properties addStudent is required, function called when Add clicked.
 class AddStudent extends Component {
       constructor(props) {
       super(props);
-      this.state = {open: false, student:{}};
+      this.state = {open: false, name:"", email:"", message:"" };
     };
     
     handleClickOpen = () => {
       this.setState( {open:true} );
     };
 
+
     handleClose = () => {
-      this.setState( {open:false} );
+      this.setState( {open:false, name:"", email:"", message:""} );
     };
 
-    handleChangeNameField = (event) => {
-      this.setState(aState => ({student:{name: event.target.value, email: aState.student.email}}));
+
+    handleChange = (event) => {
+      this.setState({[event.target.name]: event.target.value});
     }
-	
-	handleChangeEmailField = (event) => {
-      this.setState(aState => ({student:{name: aState.student.name, email: event.target.value}}));
-    }
-	
-  // Save course and close modal form
+
+
     handleAdd = () => {
-       this.props.addStudent(this.state.student);
-       this.handleClose();
-	   //console.log("entered handle Add");
-    }
-	
+		const token = Cookies.get('XSRF-TOKEN');
+               let   rc = 0;
+		fetch(`${SERVER_URL}/student`,
+		//fetch(`http://localhost:8080/student`,		
+		  {  
+			  method: 'POST', 
+                        headers: { 'Content-Type': 'application/json',
+                                   'X-XSRF-TOKEN': token  }, 
+                 body: JSON.stringify(
+                    {studentName: this.state.name, studentEmail:this.state.email})
+		  } )
+		.then((response) => { 
+                   rc = response.status;
+                   return response.json(); 
+               })
+               .then((response) => {
+                 if (response.id) {
+                    this.setState({id: response.id, message: "Student id="+response.id});
+                 } else {
+                    this.setState({message: "Add failed. Email already exists. rc="+rc});
+                 }
+                })    
+		 .catch(err => {
+			this.setState({message: "Add failed. "+err});
+		  }
+		 )
+	       }
 
 
     render()  { 
       return (
-          <div>
-            <Button variant="outlined" color="primary" style={{margin: 10}} onClick={this.handleClickOpen}>
-              Add Student
-            </Button>
-            <Dialog open={this.state.open} onClose={this.handleClose}>
-                <DialogTitle>Add Student</DialogTitle>
-                <DialogContent  style={{paddingTop: 20}} >
-                  <TextField autoFocus fullWidth label="Student Name" name="name" onChange={this.handleChangeNameField}  />
-				  <br></br><br></br>
-					<TextField autoFocus fullWidth label="Student Email" name="email" onChange={this.handleChangeEmailField}  />				  
-                </DialogContent>
-                <DialogActions>
-                  <Button color="secondary" onClick={this.handleClose}>Cancel</Button>
-                  <Button id="Add" color="primary" onClick={this.handleAdd}>Add</Button>
-				  
-                </DialogActions>
-				
-              </Dialog>      
-          </div>
+        <div>
+          <Button variant="outlined" color="primary" style={{margin: 10}}
+                  onClick={this.handleClickOpen}>
+            Add Student
+          </Button>
+          <Dialog open={this.state.open} onClose={this.handleClose}>
+            <DialogTitle>Add Student</DialogTitle>
+            <DialogContent  style={{paddingTop: 20}} >
+              <h3> {this.state.message} </h3>
+              <TextField autoFocus fullWidth label="Name" name="name" 
+                       onChange={this.handleChange}  />
+              <br/><br/>
+              <TextField fullWidth label="Email" name="email" onChange={this.handleChange}/>	
+            </DialogContent>
+            <DialogActions>
+              <Button color="secondary" onClick={this.handleClose}>Close</Button>
+              <Button id="Add" color="primary" onClick={this.handleAdd}>Add</Button>
+            </DialogActions>
+          </Dialog>      
+        </div>
       ); 
     }
 }
-
-// required property:  addStudent is a function to call to perform the Add action
-AddStudent.propTypes = {
- addStudent : PropTypes.func
-}
-
 export default AddStudent;
